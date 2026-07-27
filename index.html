@@ -1,21 +1,796 @@
 <!DOCTYPE html>
-<html>
+<html lang="zh-CN">
 <head>
-  <title>XCPrinter</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="description" content="曦辰打印机 — 绕过外卖平台高额抽成，让小商家和骑手更赚钱。免费接入，极速出单，多平台订单统一管理。">
+  <meta name="keywords" content="曦辰打印机,外卖打印机,小票打印机,外卖订单打印,骑手打印,商家打印机">
+  <meta property="og:title" content="曦辰打印机 — 让商家和骑手更赚钱">
+  <meta property="og:description" content="绕过巨头抽成和垄断，免费接入，极速出单。">
+  <meta property="og:type" content="website">
+  <meta name="theme-color" content="#e63946">
+  <title>XCPrinter — 曦辰打印机</title>
   <style>
-    .title {
-        color: red;
+    /* ===== Reset & Base ===== */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { font-size: 16px; -webkit-text-size-adjust: 100%; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+      color: #1a1a2e; background: #fafafa; line-height: 1.6; overflow-x: hidden;
     }
+    a { text-decoration: none; color: inherit; }
+    img { max-width: 100%; display: block; }
+    ul { list-style: none; }
+
+    /* ===== Container ===== */
+    .container { width: 100%; max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+    @media (min-width: 768px) { .container { padding: 0 32px; } }
+
+    /* ===== Buttons ===== */
+    .btn {
+      display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+      min-height: 48px; padding: 0 28px; border-radius: 10px; font-size: 15px;
+      font-weight: 600; cursor: pointer; border: none; transition: all 0.25s;
+      white-space: nowrap; -webkit-tap-highlight-color: transparent;
+    }
+    @media (min-width: 768px) { .btn { min-height: 52px; padding: 0 36px; font-size: 16px; } }
+    .btn-primary {
+      background: linear-gradient(135deg, #e63946, #d62839);
+      color: #fff; box-shadow: 0 4px 16px rgba(230,57,70,0.3);
+    }
+    .btn-primary:active { transform: scale(0.97); }
+    .btn-outline {
+      background: transparent; color: #e63946; border: 2px solid #e63946;
+    }
+    .btn-outline:active { background: #e63946; color: #fff; }
+    .btn-white {
+      background: #fff; color: #e63946; font-weight: 600;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+    }
+    .btn-white:active { transform: scale(0.97); }
+    .btn-block { width: 100%; }
+
+    /* ===== Section ===== */
+    .section { padding: 60px 0; }
+    @media (min-width: 768px) { .section { padding: 80px 0; } }
+    .section-tag {
+      display: inline-block; background: rgba(230,57,70,0.1); color: #e63946;
+      padding: 5px 14px; border-radius: 20px; font-size: 12px; font-weight: 700;
+      letter-spacing: 1px; text-transform: uppercase; margin-bottom: 12px;
+    }
+    .section-heading {
+      text-align: center; margin-bottom: 40px;
+    }
+    @media (min-width: 768px) { .section-heading { margin-bottom: 56px; } }
+    .section-heading h2 {
+      font-size: 26px; font-weight: 800; color: #1a1a2e; margin-bottom: 10px;
+    }
+    @media (min-width: 768px) { .section-heading h2 { font-size: 36px; } }
+    .section-heading p { font-size: 15px; color: #777; max-width: 500px; margin: 0 auto; }
+
+    /* ===== Navbar ===== */
+    .nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+      background: rgba(255,255,255,0.95); backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(0,0,0,0.06);
+    }
+    .nav .container { display: flex; align-items: center; justify-content: space-between; height: 56px; }
+    @media (min-width: 768px) { .nav .container { height: 64px; } }
+    .nav-logo { font-size: 20px; font-weight: 800; color: #e63946; letter-spacing: -0.5px; flex-shrink: 0; }
+    @media (min-width: 768px) { .nav-logo { font-size: 22px; } }
+    .nav-links { display: none; }
+    @media (min-width: 900px) { .nav-links { display: flex; gap: 28px; } }
+    .nav-links a { font-size: 14px; font-weight: 500; color: #555; transition: color 0.2s; }
+    .nav-links a:hover { color: #e63946; }
+    .nav-cta { display: none; }
+    @media (min-width: 900px) { .nav-cta { display: inline-flex; } }
+
+    /* ===== Mobile Menu ===== */
+    .menu-toggle {
+      display: flex; align-items: center; justify-content: center;
+      width: 44px; height: 44px; border: none; background: none; cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+    }
+    @media (min-width: 900px) { .menu-toggle { display: none; } }
+    .menu-toggle span {
+      display: block; width: 22px; height: 2px; background: #333; border-radius: 2px;
+      position: relative; transition: background 0.3s;
+    }
+    .menu-toggle span::before, .menu-toggle span::after {
+      content: ''; position: absolute; left: 0; width: 100%; height: 2px;
+      background: #333; border-radius: 2px; transition: transform 0.3s;
+    }
+    .menu-toggle span::before { top: -7px; }
+    .menu-toggle span::after { top: 7px; }
+    .menu-open .menu-toggle span { background: transparent; }
+    .menu-open .menu-toggle span::before { transform: rotate(45deg); top: 0; }
+    .menu-open .menu-toggle span::after { transform: rotate(-45deg); top: 0; }
+
+    .mobile-menu {
+      display: none; position: fixed; top: 56px; left: 0; right: 0; bottom: 0;
+      background: #fff; z-index: 999; flex-direction: column; padding: 24px 20px;
+      overflow-y: auto;
+    }
+    @media (min-width: 768px) { .mobile-menu { top: 64px; } }
+    .mobile-menu.active { display: flex; }
+    .mobile-menu a {
+      display: block; padding: 16px 0; font-size: 17px; font-weight: 600;
+      color: #1a1a2e; border-bottom: 1px solid #f0f0f0;
+    }
+    .mobile-menu .btn { margin-top: 20px; }
+
+    /* ===== Hero ===== */
+    .hero {
+      min-height: 100vh; display: flex; align-items: center; padding-top: 56px;
+      background: linear-gradient(160deg, #0f0c29 0%, #1a1a2e 40%, #16213e 100%);
+      position: relative; overflow: hidden;
+    }
+    @media (min-width: 768px) { .hero { padding-top: 64px; } }
+    .hero::before {
+      content: ''; position: absolute; top: -50%; left: -50%; width: 200%; height: 200%;
+      background: radial-gradient(circle at 30% 50%, rgba(230,57,70,0.1) 0%, transparent 50%),
+                  radial-gradient(circle at 70% 50%, rgba(230,57,70,0.06) 0%, transparent 50%);
+    }
+    .hero .container { position: relative; z-index: 1; text-align: center; }
+    .hero h1 {
+      font-size: 30px; font-weight: 900; color: #fff; line-height: 1.25; margin-bottom: 16px;
+    }
+    @media (min-width: 480px) { .hero h1 { font-size: 36px; } }
+    @media (min-width: 768px) { .hero h1 { font-size: clamp(40px, 5vw, 56px); } }
+    .hero h1 .accent {
+      background: linear-gradient(135deg, #e63946, #ff6b6b);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    .hero-sub { font-size: 17px; color: rgba(255,255,255,0.7); margin-bottom: 8px; }
+    @media (min-width: 768px) { .hero-sub { font-size: 20px; } }
+    .hero-desc { font-size: 14px; color: rgba(255,255,255,0.5); margin-bottom: 32px; }
+    @media (min-width: 768px) { .hero-desc { font-size: 16px; } }
+    .hero-btns {
+      display: flex; flex-direction: column; gap: 12px; align-items: center;
+    }
+    @media (min-width: 480px) { .hero-btns { flex-direction: row; justify-content: center; } }
+    .hero-stats {
+      display: flex; justify-content: center; gap: 28px; margin-top: 48px; flex-wrap: wrap;
+    }
+    @media (min-width: 768px) { .hero-stats { gap: 56px; } }
+    .hero-stat { text-align: center; }
+    .hero-stat-num { font-size: 30px; font-weight: 800; color: #fff; }
+    @media (min-width: 768px) { .hero-stat-num { font-size: 38px; } }
+    .hero-stat-label { font-size: 13px; color: rgba(255,255,255,0.45); margin-top: 4px; }
+
+    /* ===== Pain Points ===== */
+    .problems { background: #fff; }
+    .problems-grid {
+      display: grid; grid-template-columns: 1fr; gap: 16px;
+    }
+    @media (min-width: 600px) { .problems-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (min-width: 900px) { .problems-grid { grid-template-columns: repeat(4, 1fr); } }
+    .problem-card {
+      background: #fff; border: 1px solid #eee; border-radius: 14px;
+      padding: 24px 20px; text-align: center; transition: box-shadow 0.3s;
+    }
+    .problem-card:active { box-shadow: 0 8px 24px rgba(0,0,0,0.06); }
+    .problem-icon { font-size: 36px; margin-bottom: 12px; }
+    .problem-card h3 { font-size: 16px; font-weight: 700; margin-bottom: 6px; }
+    .problem-card p { font-size: 13px; color: #888; line-height: 1.6; }
+
+    /* ===== Features ===== */
+    .features { background: #fafafa; }
+    .features-grid {
+      display: grid; grid-template-columns: 1fr; gap: 16px;
+    }
+    @media (min-width: 600px) { .features-grid { grid-template-columns: repeat(2, 1fr); } }
+    @media (min-width: 900px) { .features-grid { grid-template-columns: repeat(3, 1fr); } }
+    .feature-card {
+      background: #fff; border-radius: 14px; padding: 28px 22px;
+      border: 1px solid #f0f0f0; transition: box-shadow 0.3s;
+    }
+    .feature-card:active { box-shadow: 0 8px 24px rgba(0,0,0,0.06); }
+    .feature-icon {
+      width: 50px; height: 50px; border-radius: 12px; display: flex;
+      align-items: center; justify-content: center; font-size: 24px;
+      background: rgba(230,57,70,0.08); color: #e63946; margin-bottom: 16px;
+      flex-shrink: 0;
+    }
+    .feature-card h3 { font-size: 16px; font-weight: 700; margin-bottom: 6px; }
+    .feature-card p { font-size: 13px; color: #777; line-height: 1.6; }
+
+    /* ===== Demo / How it Works ===== */
+    .demo { background: #fff; }
+    .demo-steps {
+      display: grid; grid-template-columns: 1fr; gap: 24px;
+    }
+    @media (min-width: 600px) { .demo-steps { grid-template-columns: repeat(3, 1fr); } }
+    .demo-step { text-align: center; }
+    .demo-step-num {
+      width: 48px; height: 48px; border-radius: 50%;
+      background: linear-gradient(135deg, #e63946, #f15a6b);
+      color: #fff; font-size: 20px; font-weight: 800;
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 14px; box-shadow: 0 4px 14px rgba(230,57,70,0.25);
+    }
+    .demo-step h4 { font-size: 16px; font-weight: 700; margin-bottom: 4px; }
+    .demo-step p { font-size: 13px; color: #888; }
+    .demo-placeholder {
+      margin-top: 36px; background: #f8f8f8; border-radius: 14px;
+      border: 2px dashed #e0e0e0; aspect-ratio: 16/9;
+      display: flex; align-items: center; justify-content: center;
+      color: #bbb; font-size: 14px;
+    }
+
+    /* ===== Pricing ===== */
+    .pricing { background: #fafafa; }
+    .pricing-grid {
+      display: grid; grid-template-columns: 1fr; gap: 16px; align-items: start;
+    }
+    @media (min-width: 600px) { .pricing-grid { grid-template-columns: repeat(3, 1fr); } }
+    .pricing-card {
+      background: #fff; border-radius: 14px; padding: 32px 24px;
+      border: 2px solid #f0f0f0; position: relative; text-align: center;
+    }
+    .pricing-card.featured {
+      border-color: #e63946; box-shadow: 0 8px 30px rgba(230,57,70,0.1);
+    }
+    @media (min-width: 600px) { .pricing-card.featured { order: 0; } }
+    .pricing-badge {
+      position: absolute; top: -13px; left: 50%; transform: translateX(-50%);
+      background: linear-gradient(135deg, #e63946, #f15a6b); color: #fff;
+      padding: 5px 18px; border-radius: 20px; font-size: 12px; font-weight: 700;
+      white-space: nowrap;
+    }
+    .pricing-card h3 { font-size: 18px; font-weight: 700; margin-bottom: 8px; }
+    .pricing-price { font-size: 38px; font-weight: 900; color: #e63946; margin-bottom: 20px; }
+    .pricing-price small { font-size: 15px; font-weight: 400; color: #aaa; }
+    .pricing-features { text-align: left; margin-bottom: 24px; }
+    .pricing-features li {
+      padding: 10px 0; border-bottom: 1px solid #f5f5f5; font-size: 13px; color: #666;
+    }
+    .pricing-features li::before { content: '✓ '; color: #2ecc71; font-weight: 700; margin-right: 6px; }
+
+    /* ===== Comparison Table ===== */
+    .comparison { background: #fff; }
+    .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; margin: 0 -20px; padding: 0 20px; }
+    @media (min-width: 768px) { .table-wrap { margin: 0; padding: 0; } }
+    .comp-table {
+      width: 100%; min-width: 480px; border-collapse: collapse; border-radius: 12px;
+      overflow: hidden; box-shadow: 0 2px 16px rgba(0,0,0,0.05);
+    }
+    .comp-table th {
+      background: #1a1a2e; color: #fff; padding: 14px 18px; text-align: left;
+      font-size: 14px; font-weight: 600;
+    }
+    .comp-table td { padding: 12px 18px; font-size: 13px; border-bottom: 1px solid #f0f0f0; background: #fff; }
+    .comp-table tr:nth-child(even) td { background: #fafafa; }
+    .comp-table .good { color: #2ecc71; font-weight: 700; }
+    .comp-table .bad { color: #e74c3c; }
+    .comp-table .hl { background: rgba(46,204,113,0.05) !important; }
+
+    /* ===== Testimonials ===== */
+    .testimonials { background: #fafafa; }
+    .testi-grid {
+      display: grid; grid-template-columns: 1fr; gap: 16px;
+    }
+    @media (min-width: 700px) { .testi-grid { grid-template-columns: repeat(3, 1fr); } }
+    .testi-card {
+      background: #fff; border-radius: 14px; padding: 24px 22px; border: 1px solid #f0f0f0;
+    }
+    .testi-stars { color: #f39c12; font-size: 15px; margin-bottom: 10px; }
+    .testi-text { font-size: 14px; color: #666; line-height: 1.7; margin-bottom: 14px; }
+    .testi-author { display: flex; align-items: center; gap: 10px; }
+    .testi-avatar {
+      width: 40px; height: 40px; border-radius: 50%;
+      background: linear-gradient(135deg, #e63946, #f15a6b);
+      color: #fff; display: flex; align-items: center; justify-content: center;
+      font-weight: 700; font-size: 15px; flex-shrink: 0;
+    }
+    .testi-name { font-weight: 700; font-size: 14px; }
+    .testi-role { font-size: 12px; color: #aaa; }
+
+    /* ===== CTA ===== */
+    .cta {
+      background: linear-gradient(160deg, #0f0c29 0%, #1a1a2e 40%, #16213e 100%);
+      text-align: center; position: relative; overflow: hidden;
+    }
+    .cta::before {
+      content: ''; position: absolute; inset: 0;
+      background: radial-gradient(circle at center, rgba(230,57,70,0.07) 0%, transparent 70%);
+    }
+    .cta .container { position: relative; z-index: 1; }
+    .cta h2 { font-size: 26px; font-weight: 800; color: #fff; margin-bottom: 8px; }
+    @media (min-width: 768px) { .cta h2 { font-size: 36px; } }
+    .cta p { font-size: 15px; color: rgba(255,255,255,0.55); margin-bottom: 28px; }
+    .cta-btns { display: flex; flex-direction: column; gap: 12px; align-items: center; }
+    @media (min-width: 480px) { .cta-btns { flex-direction: row; justify-content: center; } }
+
+    /* ===== FAQ ===== */
+    .faq { background: #fff; }
+    .faq-list { max-width: 680px; margin: 0 auto; }
+    .faq-item { border: 1px solid #eee; border-radius: 10px; margin-bottom: 10px; overflow: hidden; }
+    .faq-q {
+      width: 100%; background: none; border: none; text-align: left;
+      padding: 18px 18px; font-size: 15px; font-weight: 600; cursor: pointer;
+      display: flex; justify-content: space-between; align-items: center;
+      color: #1a1a2e; -webkit-tap-highlight-color: transparent;
+      min-height: 44px; gap: 12px;
+    }
+    .faq-q::after {
+      content: '+'; font-size: 22px; color: #e63946; flex-shrink: 0;
+      transition: transform 0.3s; line-height: 1;
+    }
+    .faq-item.open .faq-q::after { content: '−'; }
+    .faq-a { max-height: 0; overflow: hidden; transition: max-height 0.35s, padding 0.35s; }
+    .faq-item.open .faq-a { max-height: 400px; padding: 0 18px 18px; }
+    .faq-a p { font-size: 14px; color: #777; line-height: 1.7; }
+
+    /* ===== Footer ===== */
+    .footer {
+      background: #1a1a2e; color: rgba(255,255,255,0.5); padding: 40px 0 20px;
+    }
+    .footer-grid {
+      display: grid; grid-template-columns: repeat(2, 1fr); gap: 28px; margin-bottom: 32px;
+    }
+    @media (min-width: 768px) { .footer-grid { grid-template-columns: repeat(4, 1fr); } }
+    .footer-col h4 { color: #fff; font-size: 15px; font-weight: 700; margin-bottom: 12px; }
+    .footer-col a { display: block; font-size: 13px; margin-bottom: 8px; }
+    .footer-col a:active { color: #fff; }
+    .footer-bottom {
+      border-top: 1px solid rgba(255,255,255,0.08); padding-top: 18px;
+      text-align: center; font-size: 12px;
+    }
+
+    /* ===== Body lock when mobile menu open ===== */
+    body.no-scroll { overflow: hidden; }
   </style>
 </head>
 <body>
-	<section data-controller="print-pos">
-    <div class="text-centered">
-    <h1 data-print="text_big" class="title text-white">曦辰打印机</h1>
-    <h2 data-print="text" class="title is-4 text-white">绕过巨头抽成和垄断</h2>
-    <h2 data-print="text" class="title is-4 text-white">让小商家和骑手更赚钱</h2>
+
+  <!-- ============================== Nav ============================== -->
+  <nav class="nav" id="nav" role="navigation" aria-label="主导航">
+    <div class="container">
+      <a href="#" class="nav-logo" aria-label="XCPrinter 首页">XCPrinter</a>
+      <ul class="nav-links">
+        <li><a href="#features">产品功能</a></li>
+        <li><a href="#demo">使用演示</a></li>
+        <li><a href="#pricing">价格方案</a></li>
+        <li><a href="#comparison">平台对比</a></li>
+        <li><a href="#faq">常见问题</a></li>
+      </ul>
+      <a href="#cta" class="btn btn-primary nav-cta">免费试用</a>
+      <button class="menu-toggle" id="menuToggle" aria-label="打开菜单" aria-expanded="false">
+        <span></span>
+      </button>
     </div>
-    <button data-action="print-pos#print" class="button">打印</button>
-	</section>
+  </nav>
+
+  <!-- Mobile Menu -->
+  <div class="mobile-menu" id="mobileMenu" role="dialog" aria-label="移动端导航菜单" aria-hidden="true">
+    <a href="#features">产品功能</a>
+    <a href="#demo">使用演示</a>
+    <a href="#pricing">价格方案</a>
+    <a href="#comparison">平台对比</a>
+    <a href="#faq">常见问题</a>
+    <a href="#cta" class="btn btn-primary btn-block">免费试用</a>
+  </div>
+
+  <!-- ============================== Hero ============================== -->
+  <section class="hero" aria-label="首页主视觉" data-controller="print-pos">
+    <div class="container">
+      <h1 data-print="text_big">绕过巨头抽成，<br>让<span class="accent">商家和骑手</span>更赚钱</h1>
+      <p class="hero-sub" data-print="text">曦辰打印机 — 外卖订单打印，本该如此简单</p>
+      <p class="hero-desc">免费接入，无需绑定设备，多平台订单统一管理</p>
+      <div class="hero-btns">
+        <button data-action="print-pos#print" class="btn btn-primary btn-block" style="max-width:240px;" aria-label="免费开始使用">免费开始使用</button>
+        <a href="#demo" class="btn btn-white btn-block" style="max-width:240px;" aria-label="查看产品演示">查看演示</a>
+      </div>
+      <div class="hero-stats">
+        <div class="hero-stat">
+          <div class="hero-stat-num">5,000+</div>
+          <div class="hero-stat-label">合作商家</div>
+        </div>
+        <div class="hero-stat">
+          <div class="hero-stat-num">99.9%</div>
+          <div class="hero-stat-label">出单成功率</div>
+        </div>
+        <div class="hero-stat">
+          <div class="hero-stat-num">&lt;1秒</div>
+          <div class="hero-stat-label">响应速度</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================== Pain Points ============================== -->
+  <section class="section problems" aria-label="行业痛点">
+    <div class="container">
+      <div class="section-heading">
+        <span class="section-tag">行业痛点</span>
+        <h2>外卖商家正在被"收割"</h2>
+        <p>高抽成、绑设备、锁数据——利润越做越薄</p>
+      </div>
+      <div class="problems-grid">
+        <div class="problem-card">
+          <div class="problem-icon">💸</div>
+          <h3>抽成高达 20%+</h3>
+          <p>每笔订单被平台抽走近五分之一，辛苦给平台打工</p>
+        </div>
+        <div class="problem-card">
+          <div class="problem-icon">🔒</div>
+          <h3>设备强制绑定</h3>
+          <p>平台指定高价打印机，不买就不让接单</p>
+        </div>
+        <div class="problem-card">
+          <div class="problem-icon">📊</div>
+          <h3>数据不透明</h3>
+          <p>订单数据全在平台手里，分析经营？数据是他们的</p>
+        </div>
+        <div class="problem-card">
+          <div class="problem-icon">🔄</div>
+          <h3>多平台切换繁琐</h3>
+          <p>美团、饿了么、抖音……每套系统都要单独管理</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================== Features ============================== -->
+  <section class="section features" id="features" aria-label="产品功能">
+    <div class="container">
+      <div class="section-heading">
+        <span class="section-tag">核心功能</span>
+        <h2>让打印回归简单</h2>
+        <p>一套系统，连接所有平台，极速出单，数据归你</p>
+      </div>
+      <div class="features-grid">
+        <div class="feature-card">
+          <div class="feature-icon">⚡</div>
+          <h3>极速自动接单</h3>
+          <p>订单到达毫秒级响应，自动打印小票，告别漏单烦恼</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">🔗</div>
+          <h3>全平台聚合</h3>
+          <p>美团、饿了么、抖音、京东到家等主流平台，一个入口全管理</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">🖨️</div>
+          <h3>兼容主流打印机</h3>
+          <p>不绑定硬件，支持 USB/蓝牙/网口小票打印机，即插即用</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">📈</div>
+          <h3>经营数据分析</h3>
+          <p>订单趋势、热销菜品、营收统计一目了然，数据 100% 属于你</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">🎨</div>
+          <h3>小票模板自定义</h3>
+          <p>自由设计小票样式，添加 Logo、二维码、促销信息</p>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">📱</div>
+          <h3>手机远程管理</h3>
+          <p>不在店里也能随时查看订单，经营状况一手掌握</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================== Demo ============================== -->
+  <section class="section demo" id="demo" aria-label="使用演示">
+    <div class="container">
+      <div class="section-heading">
+        <span class="section-tag">使用演示</span>
+        <h2>三步搞定，轻松上手</h2>
+        <p>无需技术背景，注册到出单只需 3 分钟</p>
+      </div>
+      <div class="demo-steps">
+        <div class="demo-step">
+          <div class="demo-step-num">1</div>
+          <h4>注册账号</h4>
+          <p>手机号快速注册，免费开通</p>
+        </div>
+        <div class="demo-step">
+          <div class="demo-step-num">2</div>
+          <h4>连接打印机</h4>
+          <p>USB 即插即用，或蓝牙/WiFi 一键配对</p>
+        </div>
+        <div class="demo-step">
+          <div class="demo-step-num">3</div>
+          <h4>绑定平台</h4>
+          <p>授权外卖平台，订单自动同步出单</p>
+        </div>
+      </div>
+      <div class="demo-placeholder" role="img" aria-label="产品界面截图占位">
+        产品操作界面截图
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================== Pricing ============================== -->
+  <section class="section pricing" id="pricing" aria-label="价格方案">
+    <div class="container">
+      <div class="section-heading">
+        <span class="section-tag">价格方案</span>
+        <h2>透明定价，无隐藏费用</h2>
+        <p>选择适合你的方案，随时升级或取消</p>
+      </div>
+      <div class="pricing-grid">
+        <div class="pricing-card">
+          <h3>免费版</h3>
+          <div class="pricing-price">¥0<small>/月</small></div>
+          <ul class="pricing-features">
+            <li>每日 50 单</li>
+            <li>1 个外卖平台</li>
+            <li>基础小票模板</li>
+            <li>手机端查看</li>
+          </ul>
+          <button data-action="print-pos#print" class="btn btn-outline btn-block">免费试用</button>
+        </div>
+        <div class="pricing-card featured">
+          <div class="pricing-badge">最受欢迎</div>
+          <h3>专业版</h3>
+          <div class="pricing-price">¥29<small>/月</small></div>
+          <ul class="pricing-features">
+            <li>无限自动打印</li>
+            <li>全部外卖平台</li>
+            <li>高级模板自定义</li>
+            <li>经营数据分析</li>
+            <li>在线客服支持</li>
+            <li>手机远程管理</li>
+          </ul>
+          <button data-action="print-pos#print" class="btn btn-primary btn-block">立即开通</button>
+        </div>
+        <div class="pricing-card">
+          <h3>企业版</h3>
+          <div class="pricing-price">¥99<small>/月</small></div>
+          <ul class="pricing-features">
+            <li>专业版全部功能</li>
+            <li>多门店统一管理</li>
+            <li>API 接口对接</li>
+            <li>专属客户经理</li>
+            <li>SLA 99.99%</li>
+          </ul>
+          <button data-action="print-pos#print" class="btn btn-outline btn-block">联系销售</button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================== Comparison ============================== -->
+  <section class="section comparison" id="comparison" aria-label="平台对比">
+    <div class="container">
+      <div class="section-heading">
+        <span class="section-tag">平台对比</span>
+        <h2>曦辰 vs 传统外卖平台</h2>
+        <p>同样的订单，不同的成本</p>
+      </div>
+      <div class="table-wrap">
+        <table class="comp-table">
+          <thead>
+            <tr>
+              <th>对比项</th>
+              <th>传统外卖平台</th>
+              <th class="hl">曦辰打印机</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>平台抽成</strong></td>
+              <td class="bad">15% - 26%</td>
+              <td class="good hl">0% 抽成</td>
+            </tr>
+            <tr>
+              <td><strong>设备成本</strong></td>
+              <td class="bad">指定设备 ¥500-2000</td>
+              <td class="good hl">兼容自备打印机</td>
+            </tr>
+            <tr>
+              <td><strong>数据归属</strong></td>
+              <td class="bad">平台掌控</td>
+              <td class="good hl">100% 归商家</td>
+            </tr>
+            <tr>
+              <td><strong>多平台管理</strong></td>
+              <td class="bad">各平台独立系统</td>
+              <td class="good hl">一个后台统一管理</td>
+            </tr>
+            <tr>
+              <td><strong>小票模板</strong></td>
+              <td class="bad">固定格式</td>
+              <td class="good hl">自由自定义</td>
+            </tr>
+            <tr>
+              <td><strong>隐藏费用</strong></td>
+              <td class="bad">推广费、排名费…</td>
+              <td class="good hl">透明定价</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================== Testimonials ============================== -->
+  <section class="section testimonials" id="testimonials" aria-label="用户评价">
+    <div class="container">
+      <div class="section-heading">
+        <span class="section-tag">用户评价</span>
+        <h2>商家都在用，效果看得见</h2>
+      </div>
+      <div class="testi-grid">
+        <div class="testi-card">
+          <div class="testi-stars" aria-label="5 星评价">★★★★★</div>
+          <p class="testi-text">"用了曦辰之后，每个月省下近 2000 块的平台抽成。小票还能印自家 Logo，顾客反馈特别好。"</p>
+          <div class="testi-author">
+            <div class="testi-avatar">张</div>
+            <div>
+              <div class="testi-name">张老板</div>
+              <div class="testi-role">川味小馆 · 成都</div>
+            </div>
+          </div>
+        </div>
+        <div class="testi-card">
+          <div class="testi-stars" aria-label="5 星评价">★★★★★</div>
+          <p class="testi-text">"以前美团饿了么两套系统切来切去，现在一个后台全搞定，自动出单从没漏过。"</p>
+          <div class="testi-author">
+            <div class="testi-avatar">李</div>
+            <div>
+              <div class="testi-name">李骑手</div>
+              <div class="testi-role">个体商户 · 深圳</div>
+            </div>
+          </div>
+        </div>
+        <div class="testi-card">
+          <div class="testi-stars" aria-label="5 星评价">★★★★★</div>
+          <p class="testi-text">"3 家分店统一管理太方便了，数据报表帮我优化了菜单，营业额涨了 30%。"</p>
+          <div class="testi-author">
+            <div class="testi-avatar">王</div>
+            <div>
+              <div class="testi-name">王经理</div>
+              <div class="testi-role">连锁餐饮 · 杭州</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================== CTA ============================== -->
+  <section class="section cta" id="cta" aria-label="行动号召">
+    <div class="container">
+      <h2>别再给平台打工了</h2>
+      <p>免费注册，3 分钟开始省钱的打印体验</p>
+      <div class="cta-btns">
+        <button data-action="print-pos#print" class="btn btn-primary btn-block" style="max-width:240px;" aria-label="免费注册">免费开始使用</button>
+        <a href="#demo" class="btn btn-white btn-block" style="max-width:240px;" aria-label="查看演示">查看演示</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================== FAQ ============================== -->
+  <section class="section faq" id="faq" aria-label="常见问题">
+    <div class="container">
+      <div class="section-heading">
+        <span class="section-tag">常见问题</span>
+        <h2>你关心的，都在这里</h2>
+      </div>
+      <div class="faq-list">
+        <div class="faq-item">
+          <button class="faq-q" aria-expanded="false">曦辰打印机支持哪些外卖平台？</button>
+          <div class="faq-a"><p>目前支持美团、饿了么、抖音生活服务、京东到家等主流平台，更多平台持续接入中。</p></div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-q" aria-expanded="false">需要购买指定打印机吗？</button>
+          <div class="faq-a"><p>不需要！曦辰兼容市面上绝大多数 USB/蓝牙/网口小票打印机，现有设备大概率可以直接使用。</p></div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-q" aria-expanded="false">免费版有什么限制？</button>
+          <div class="faq-a"><p>免费版支持每日 50 单自动打印和 1 个平台接入，适合小体量商家。单量上来后可随时升级到专业版。</p></div>
+        </div>
+        <div class="faq-item">
+          <button class="faq-q" aria-expanded="false">数据安全吗？订单数据会被泄露吗？</button>
+          <div class="faq-a"><p>订单数据完全归属于你，曦辰不做任何数据售卖或分享。所有数据传输均采用加密通道。</p></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================== Footer ============================== -->
+  <footer class="footer" role="contentinfo" aria-label="页脚">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-col">
+          <h4>产品</h4>
+          <a href="#features">产品功能</a>
+          <a href="#demo">使用演示</a>
+          <a href="#pricing">价格方案</a>
+        </div>
+        <div class="footer-col">
+          <h4>支持</h4>
+          <a href="#faq">常见问题</a>
+          <a href="#">帮助文档</a>
+          <a href="#">联系客服</a>
+        </div>
+        <div class="footer-col">
+          <h4>公司</h4>
+          <a href="#">关于我们</a>
+          <a href="#">隐私政策</a>
+          <a href="#">服务条款</a>
+        </div>
+        <div class="footer-col">
+          <h4>联系我们</h4>
+          <a href="mailto:support@xcprinter.com">support@xcprinter.com</a>
+        </div>
+      </div>
+      <div class="footer-bottom">&copy; 2024 XCPrinter. All rights reserved.</div>
+    </div>
+  </footer>
+
+  <!-- ============================== Scripts ============================== -->
+  <script>
+    (function() {
+      var menuToggle = document.getElementById('menuToggle');
+      var mobileMenu = document.getElementById('mobileMenu');
+      var body = document.body;
+
+      // Mobile menu toggle
+      menuToggle.addEventListener('click', function() {
+        var isOpen = mobileMenu.classList.toggle('active');
+        body.classList.toggle('no-scroll', isOpen);
+        menuToggle.parentElement.parentElement.classList.toggle('menu-open', isOpen);
+        menuToggle.setAttribute('aria-expanded', isOpen);
+        mobileMenu.setAttribute('aria-hidden', !isOpen);
+        menuToggle.setAttribute('aria-label', isOpen ? '关闭菜单' : '打开菜单');
+      });
+
+      // Close menu when clicking a link
+      mobileMenu.querySelectorAll('a').forEach(function(link) {
+        link.addEventListener('click', function() {
+          mobileMenu.classList.remove('active');
+          body.classList.remove('no-scroll');
+          menuToggle.parentElement.parentElement.classList.remove('menu-open');
+          menuToggle.setAttribute('aria-expanded', 'false');
+          mobileMenu.setAttribute('aria-hidden', 'true');
+          menuToggle.setAttribute('aria-label', '打开菜单');
+        });
+      });
+
+      // Smooth scroll for anchor links
+      document.querySelectorAll('a[href^="#"]').forEach(function(anchor) {
+        anchor.addEventListener('click', function(e) {
+          e.preventDefault();
+          var target = document.querySelector(this.getAttribute('href'));
+          if (target) {
+            var navHeight = document.getElementById('nav').offsetHeight;
+            var top = target.getBoundingClientRect().top + window.pageYOffset - navHeight;
+            window.scrollTo({ top: top, behavior: 'smooth' });
+          }
+        });
+      });
+
+      // FAQ accordion
+      document.querySelectorAll('.faq-q').forEach(function(btn) {
+        btn.addEventListener('click', function() {
+          var item = this.parentElement;
+          var isOpen = item.classList.contains('open');
+          item.classList.toggle('open');
+          this.setAttribute('aria-expanded', !isOpen);
+        });
+      });
+
+      // Print button binding (Stimulus compatible)
+      document.querySelectorAll('[data-action*="print"]').forEach(function(btn) {
+        btn.addEventListener('click', function(e) {
+          e.preventDefault();
+          if (typeof window.print === 'function') {
+            window.print();
+          }
+        });
+      });
+    })();
+  </script>
+
 </body>
 </html>
