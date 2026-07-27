@@ -1,20 +1,153 @@
-##  如何实现
+# XCPrinter 曦辰打印机
 
+> 绕过外卖平台高额抽成，让小商家和骑手更赚钱。
 
+在线预览：https://app-demo.xcprinter.com
 
+---
 
-### 代码示例
+## 项目简介
 
-在 data-controller 标签内，可以定义打印内容及其样式。
+`xcprinter.github.io` 是曦辰打印机的官方演示页面仓库，托管在 GitHub Pages 上，用于展示产品核心价值、功能优势、价格方案与用户案例。
+
+---
+
+## 在线演示
+
+[index.html](index.html) 是一个真实案例，可直接访问：
+
+👉 **[https://app-demo.xcprinter.com](https://app-demo.xcprinter.com)**
+
+---
+
+## 技术说明
+
+### 打印组件用法
+
+页面采用 `data-controller="print-pos"` 方式定义打印内容，支持在任意容器内设置打印元素：
 
 ```html
-<div data-controller="print-pos"></div>
+<section data-controller="print-pos">
+  <h1 data-print="text_big">曦辰打印机</h1>
+  <p data-print="text">绕过巨头抽成和垄断</p>
+  <button data-action="print-pos#print">打印</button>
+</section>
 ```
 
-###
-* 打印标题  data-print="text_big"
-* 打印内容  data-print="text"
-* 打印二维码 data-print="qrcode"
+### 打印字段说明
 
+| 属性 | 说明 |
+|------|------|
+| `data-print="text_big"` | 打印大标题 |
+| `data-print="text"` | 打印普通文本 |
+| `data-print="qrcode"` | 打印二维码 |
 
-[index.html](index.html) 是一个真实的案例，可以前往[在线预览](https://app-demo.xcprinter.com)
+---
+
+## Index 页面优化需求文档
+
+### 一、优化目标
+
+将原有简单的标题页升级为完整的营销落地页，提升品牌专业度、用户转化率与移动端访问体验。
+
+### 二、现状问题
+
+1. 页面仅包含标题与打印按钮，缺乏产品介绍与转化引导
+2. 视觉风格单一，品牌感弱
+3. 未做移动端适配，在小屏设备上体验差
+4. 缺少 SEO 元信息与社交媒体分享信息
+
+### 三、新增模块
+
+#### 1. 导航栏（Navbar）
+- 固定顶部，滚动时增加阴影
+- 桌面端展示菜单项 + CTA 按钮
+- 移动端提供汉堡菜单，支持展开/收起
+
+#### 2. Hero 主视觉区
+- 大标题突出核心价值：绕过平台抽成，让商家和骑手更赚钱
+- 副标题与数据指标展示（合作商家数、出单成功率、响应速度）
+- 双 CTA 按钮：免费开始 / 查看演示
+
+#### 3. 行业痛点
+- 展示外卖商家面临的四大痛点：高抽成、设备绑定、数据不透明、多平台切换繁琐
+
+#### 4. 核心功能
+- 极速自动接单
+- 全平台聚合
+- 兼容主流打印机
+- 经营数据分析
+- 小票模板自定义
+- 手机远程管理
+
+#### 5. 使用演示
+- 三步上手流程：注册账号 → 连接打印机 → 绑定平台
+- 产品界面截图占位区
+
+#### 6. 价格方案
+- 免费版：¥0/月，适合小体量商家
+- 专业版：¥29/月，最受欢迎，无限打印
+- 企业版：¥99/月，多门店与 API 对接
+
+#### 7. 平台对比表
+- 逐项对比传统外卖平台与曦辰打印机在抽成、设备成本、数据归属等方面的差异
+
+#### 8. 用户评价
+- 3 条真实风格的商家评价案例
+
+#### 9. 行动号召（CTA）
+- 再次强化转化入口
+
+#### 10. 常见问题（FAQ）
+- 可折叠展开的问答区域
+
+#### 11. 页脚
+- 产品、支持、公司、联系方式分类链接
+
+### 四、移动端适配要求
+
+1. 采用响应式布局，核心断点：480px、768px、900px
+2. 导航栏在移动端切换为汉堡菜单
+3. 按钮最小高度 48px，适配触控操作
+4. 字体大小适配小屏，避免过小
+5. 表格区域支持横向滚动
+6. 禁止页面缩放，提升原生 App 体验
+
+### 五、视觉与交互要求
+
+1. 主色调：红色 `#e63946` 体现品牌
+2. 深色 Hero 与 CTA 背景，突出科技感
+3. 卡片式布局，hover/active 状态有轻微动效
+4. FAQ 支持点击展开与键盘操作
+5. 锚点链接支持平滑滚动
+6. 保留 Stimulus 打印组件兼容性
+
+### 六、SEO 与无障碍
+
+1. 添加 `description`、`keywords`、`og:title`、`og:description` 等 Meta 标签
+2. 设置 `theme-color`
+3. 所有交互元素添加 `aria-label` 与 `aria-expanded`
+4. 图片与占位区域添加 `role` 与 `aria-label`
+
+### 七、兼容性要求
+
+1. 保持 `data-controller="print-pos"`、`data-action="print-pos#print"`、`data-print` 等属性不变
+2. 纯 HTML/CSS/JS 实现，不引入外部框架依赖
+3. 兼容现代浏览器（Chrome、Safari、Edge、Firefox）
+
+---
+
+## 更新记录
+
+| 版本 | 日期 | 说明 |
+|------|------|------|
+| v2.0 | 2026-07-27 | 全面重构 Index 页面：新增营销模块、移动端适配、SEO 优化 |
+| v1.0 | - | 原始标题页版本 |
+
+---
+
+## 贡献
+
+欢迎提交 Issue 或 Pull Request。
+
+Copyright &copy; 2024 XCPrinter. All rights reserved.
